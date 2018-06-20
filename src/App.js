@@ -3,7 +3,7 @@ import "./App.css";
 import Menu from "./Components/Menu";
 import { Scatter } from "react-chartjs-2";
 import axios from "axios";
-import GoogleMapReact from "google-map-react";
+import Map from "./Components/Map"
 
 class App extends Component {
   componentDidMount() {
@@ -21,24 +21,21 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <h1>Meteor Data Visualisation</h1>
-        x:{" year "}              y:{" "}
+        {this.state.data.length && <h1>Meteor Data Visualisation</h1> || ''}
+        {this.state.data.length && <span>x:{"  year"}</span> || ''} 
+        {this.state.data.length && <span>y:{""}</span> || ''}
         {this.state.data.length && (
           <Menu
             setAxisState={event => this.setAxisState("y", event)}
             axis="y"
             data={this.state.data}
           />
-        )}
-        {this.state.data.length && <Scatter data={() => this.formatData()} />}
+        ) || ''}
+        {this.state.data.length && <div className="scatter"><Scatter  data={() => this.formatData()} /></div> || ''}
+        {this.state.data.length && <hr /> || ''}
+        {this.state.data.length && <h2>Meteor Landing Sites</h2> || ''}
+        {this.state.data.length &&<Map formatCoordData={() => this.formatCoordData()} className="map"/> || ''}
         <br />
-        <br />
-        {this.state.data.length && (
-          <GoogleMapReact
-            defaultCenter={{ lat: 0, long: 0 }}
-            defaultZoom={11}
-          />
-        )}
       </div>
     );
   }
@@ -47,9 +44,8 @@ class App extends Component {
   };
 
   formatData = () => {
-    let formattedData = this.state.data;
-
-    formattedData = formattedData.reduce((acc, el) => {
+    let data = this.state.data;
+    let formattedData = data.reduce((acc, el) => {
       if (
         el[this.state.x] !== undefined &&
         el[this.state.y] !== undefined &&
@@ -75,21 +71,30 @@ class App extends Component {
         {
           label: `Scatter Chart of ${this.state.x} vs ${this.state.y}`,
           fill: false,
-          backgroundColor: "rgba(75,192,192,0.4)",
-          pointBorderColor: "rgba(75,192,192,1)",
-          pointBackgroundColor: "rgba(75,192,192,0)",
+          backgroundColor: "#FF5722",
+          pointBorderColor: "#FF5722",
+          pointBackgroundColor: "#FF5722",
           pointBorderWidth: 1,
           pointHoverRadius: 5,
-          pointHoverBackgroundColor: "rgba(75,192,192,1)",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
+          pointHoverBackgroundColor: "#FF5722",
+          pointHoverBorderColor: "#FF5722",
           pointHoverBorderWidth: 2,
-          pointRadius: 1,
+          pointRadius: 2,
           pointHitRadius: 1,
           data: formattedData
         }
       ]
     };
   };
+  formatCoordData = () => {
+  return this.state.data.reduce((acc, el) => {
+    if(el.reclong && el.reclat){
+      if (el.mass < 100000){
+        acc.push({coordinates: [el.reclong, el.reclat], mass:el.mass})}
+      }
+      return acc
+    }, [])
+  }
 }
 
 export default App;
