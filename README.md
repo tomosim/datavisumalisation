@@ -22,7 +22,7 @@ Fork, clone, install dependancies, run.
   
   ## Authors
   
-  -Tom Simmons
+  - Tom Simmons
   
   ## Acknowledgements
   
